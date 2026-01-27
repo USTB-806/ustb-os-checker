@@ -34,19 +34,22 @@ CHAPTER_CONFIG = {
     1: {
         "build_type": "bin",              
         "makefile": "Makefile-ch3",       
-        "initproc": False,              
+        "initproc": False,
+        "easy_fs_fuse": None,
         "test_programs": [],              
     },
     2: {
         "build_type": "bin",
         "makefile": "Makefile-ch3",
         "initproc": False,
+        "easy_fs_fuse": None,
         "test_programs": [],
     },
     3: {
         "build_type": "bin",
         "makefile": "Makefile-ch3",
         "initproc": False,
+        "easy_fs_fuse": None,
         "test_programs": [
             "rust/ch3_usertest.rs",
         ],
@@ -55,6 +58,7 @@ CHAPTER_CONFIG = {
         "build_type": "elf",
         "makefile": "Makefile-ch3",
         "initproc": False,
+        "easy_fs_fuse": None,
         "test_programs": [
             "rust/ch4_usertest.rs",
         ],
@@ -63,6 +67,7 @@ CHAPTER_CONFIG = {
         "build_type": "elf",
         "makefile": "Makefile-ch3",
         "initproc": True,
+        "easy_fs_fuse": None,
         "test_programs": [
             "rust/ch5_usertest.rs",
         ],
