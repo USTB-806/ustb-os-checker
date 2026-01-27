@@ -112,6 +112,9 @@ class TestRunner:
     def setup_environment(self):
         print("→ Setting up Rust environment...")
         
+        print("  Setting nightly toolchain...")
+        self._run_command("rustup default nightly")
+        
         # Check and install riscv64gc target
         result = subprocess.run(
             ["rustup", "target", "list"],
