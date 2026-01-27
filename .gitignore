@@ -1,0 +1,10 @@
+temp-os
+temp-user
+.idea
+__pycache__
+temp-*
+stdout-ch*
+*.bak
+__pycache__/
+*.pyc
+.DS_Store

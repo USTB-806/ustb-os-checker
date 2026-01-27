@@ -1,0 +1,31 @@
+ARCH := riscv64
+MODE := release
+TARGET := riscv64gc-unknown-none-elf
+KERNEL := target/riscv64gc-unknown-none-elf/release/kernel
+
+env:
+	(rustup target list | grep "$(TARGET) (installed)") || rustup target add $(TARGET)
+	cargo install cargo-binutils
+	rustup component add rust-src
+	rustup component add llvm-tools-preview
+
+kernel:
+	cargo build --$(MODE) --target $(TARGET)
+
+user:
+	@cd ../user && make build
+
+build: env user kernel
+
+QEMU_EXEC = qemu-system-riscv64 -machine virt \
+			-kernel ${KERNEL} \
+			-nographic \
+			-smp 1 \
+			-bios default
+
+run: clean build
+	${QEMU_EXEC}
+
+clean:
+	cargo clean
+	cd ../user && make clean
