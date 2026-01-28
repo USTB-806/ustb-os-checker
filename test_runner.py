@@ -37,7 +37,6 @@ class TestRunner:
             self.setup_environment()
             self.randomize_strings()
             self.overwrite_configs()
-            self.build_user_programs()
             self.copy_initproc() if self.chapter_config["initproc"] else None
             self.run_os()
             self.check_output()
