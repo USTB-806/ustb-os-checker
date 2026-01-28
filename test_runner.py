@@ -155,6 +155,7 @@ class TestRunner:
             ("passed", f"passed{self.rand_suffix}"),
             ("Success", f"Success{self.rand_suffix}"),
             ("completed", f"completed{self.rand_suffix}"),
+            ("test_file", f"test_file{self.rand_suffix}"),
         ]
         for old, new in replacements:
             content = content.replace(old, new)

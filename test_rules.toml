@@ -10,8 +10,8 @@ expected = [
     'r"Test power_3 OK\d+!"',
     
     "Testing open/read/close...",
-    "sys_open: path = test_file",
-    'r"Read content: Success\d+!"',
+    'r"sys_open: path = test_file\d+"',
+    "Read content: Success!",
     'r"sys_close: fd = \d+"',
 ]
 not_expected = ["FAIL: T.T"]
