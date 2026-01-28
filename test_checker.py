@@ -67,7 +67,7 @@ def parse_pattern(pattern: str) -> str:
     """
     解析模式字符串
     如果是 r"..." 格式，返回正则表达式
-    否则返回普通字符串
+    否则返回转义后的普通字符串
     """
     pattern = pattern.strip()
     
@@ -76,7 +76,7 @@ def parse_pattern(pattern: str) -> str:
     elif pattern.startswith("r'") and pattern.endswith("'"):
         return pattern[2:-1]  # r' and '
     else:
-        return pattern
+        return re.escape(pattern)
 
 
 def test(expected: list, not_expected: list = None):
