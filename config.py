@@ -36,7 +36,13 @@ CHAPTER_CONFIG = {
         "makefile": "Makefile-ch2",
         "initproc": False,
         "easy_fs_fuse": None,
-        "test_programs": [],
+        "test_programs": [
+            "rust/bad_address.rs",
+            "rust/hello_world.rs",
+            "rust/power.rs",
+            "c/hello.c",
+            "c/read.c",
+        ],
     },
     3: {
         "build_type": "bin",

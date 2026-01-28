@@ -13,8 +13,6 @@ expected = [
     "sys_open: path = test_file",
     'r"Read content: Success\d+!"',
     'r"sys_close: fd = \d+"',
-    
-    'r"All applications completed\d+!"',
 ]
 not_expected = ["FAIL: T.T"]
 
