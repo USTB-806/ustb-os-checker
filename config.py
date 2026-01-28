@@ -31,23 +31,16 @@ TEMP_USER_DIR = CHECKER_DIR / "temp-user"
 # - test_programs: 需要从 check/ 覆盖的测试程序列表
 
 CHAPTER_CONFIG = {
-    1: {
-        "build_type": "bin",              
-        "makefile": "Makefile-ch3",       
-        "initproc": False,
-        "easy_fs_fuse": None,
-        "test_programs": [],              
-    },
     2: {
         "build_type": "bin",
-        "makefile": "Makefile-ch3",
+        "makefile": "Makefile-ch2",
         "initproc": False,
         "easy_fs_fuse": None,
         "test_programs": [],
     },
     3: {
         "build_type": "bin",
-        "makefile": "Makefile-ch3",
+        "makefile": "Makefile-ch2",
         "initproc": False,
         "easy_fs_fuse": None,
         "test_programs": [
@@ -56,7 +49,7 @@ CHAPTER_CONFIG = {
     },
     4: {
         "build_type": "elf",
-        "makefile": "Makefile-ch3",
+        "makefile": "Makefile-ch2",
         "initproc": False,
         "easy_fs_fuse": None,
         "test_programs": [
@@ -65,7 +58,7 @@ CHAPTER_CONFIG = {
     },
     5: {
         "build_type": "elf",
-        "makefile": "Makefile-ch3",
+        "makefile": "Makefile-ch2",
         "initproc": True,
         "easy_fs_fuse": None,
         "test_programs": [

@@ -12,10 +12,7 @@ env:
 kernel:
 	cargo build --$(MODE) --target $(TARGET)
 
-user:
-	@cd ../user && make build
-
-build: env user kernel
+build: env kernel
 
 QEMU_EXEC = qemu-system-riscv64 -machine virt \
 			-kernel ${KERNEL} \
@@ -28,4 +25,3 @@ run: clean build
 
 clean:
 	cargo clean
-	cd ../user && make clean
