@@ -1,9 +1,20 @@
 [ch2]
 expected = [
+    "[kernel] PageFault in application, kernel killed it.",
+    
+    "Hello from C!",
+    
     "Hello, world from user mode program!",
-    "Test power_3 OK!",
-    "Test power_5 OK!",
-    "Test power_7 OK!",
+    
+    "3^200000 = 871008973(MOD 998244353)",
+    'r"Test power_3 OK\d+!"',
+    
+    "Testing open/read/close...",
+    "sys_open: path = test_file",
+    'r"Read content: Success\d+!"',
+    'r"sys_close: fd = \d+"',
+    
+    'r"All applications completed\d+!"',
 ]
 not_expected = ["FAIL: T.T"]
 

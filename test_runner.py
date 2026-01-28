@@ -150,8 +150,14 @@ class TestRunner:
     
     def _randomize_file(self, file_path: Path):
         content = file_path.read_text()
-        content = content.replace("OK", f"OK{self.rand_suffix}")
-        content = content.replace("passed", f"passed{self.rand_suffix}")
+        replacements = [
+            ("OK", f"OK{self.rand_suffix}"),
+            ("passed", f"passed{self.rand_suffix}"),
+            ("Success", f"Success{self.rand_suffix}"),
+            ("completed", f"completed{self.rand_suffix}"),
+        ]
+        for old, new in replacements:
+            content = content.replace(old, new)
         file_path.write_text(content)
     
     def overwrite_configs(self):
