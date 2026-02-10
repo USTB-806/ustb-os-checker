@@ -50,7 +50,11 @@ CHAPTER_CONFIG = {
         "initproc": False,
         "easy_fs_fuse": None,
         "test_programs": [
-            "rust/ch3_usertest.rs",
+            "rust/ch3b_yield0.rs",
+            "rust/ch3b_yield1.rs",
+            "rust/ch3b_yield2.rs",
+            "c/trace_simple.c",
+            "c/trace.c"
         ],
     },
     4: {

@@ -18,16 +18,16 @@ not_expected = ["FAIL: T.T"]
 
 [ch3]
 expected = [
-    "Test write A OK!",
-    "Test write B OK!",
-    "Test write C OK!",
-    'r"get_time OK! (\d+)"',
-    "Test sleep OK!",
-    'r"current time_msec = (\d+)"',
-    'r"time_msec = (\d+) after sleeping (\d+) ticks, delta = (\d+)ms!"',
-    "Test sleep1 passed!",
-    "string from task trace test",
-    "Test trace OK!",
+    'r"Test write A OK\d+!"',
+    'r"Test write B OK\d+!"',
+    'r"Test write C OK\d+!"',
+
+    'r"Success\d+ trace_simple!"',
+
+    'r"SYSCALL_WRITE count completed after writes: \d+"',
+    'r"Task Status: \d+ (RUNNING) OK\d+!"',
+    'r"Success! Total syscalls: \d+"',
+    'r"Success\d+! Total syscalls made: \d+"',
 ]
 not_expected = ["FAIL: T.T"]
 
