@@ -24,9 +24,9 @@ expected = [
 
     'r"Success\d+ trace_simple!"',
 
-    'r"SYSCALL_WRITE count completed after writes: \d+"',
-    'r"Task Status: \d+ (RUNNING) OK\d+!"',
-    'r"Success! Total syscalls: \d+"',
+    'r"SYSCALL_WRITE count completed\d+ after writes: \d+"',
+    'r"Task Status: \d+ \(RUNNING\) OK\d+!"',
+    'r"Success\d+! Total syscalls: \d+"',
     'r"Success\d+! Total syscalls made: \d+"',
 ]
 not_expected = ["FAIL: T.T"]
