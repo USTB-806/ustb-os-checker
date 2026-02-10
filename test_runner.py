@@ -180,15 +180,15 @@ class TestRunner:
         
         # Overwrite user Makefiles
         shutil.copy(
-            config.OVERWRITE_DIR / "Makefile-user",
+            config.OVERWRITE_DIR / self.chapter_config.get("makefile_user_main", "Makefile-user"),
             self.work_user_dir / "Makefile"
         )
         shutil.copy(
-            config.OVERWRITE_DIR / "Makefile-user-rust",
+            config.OVERWRITE_DIR / self.chapter_config.get("makefile_user_rust", "Makefile-user-rust"),
             self.work_user_dir / "rust" / "Makefile"
         )
         shutil.copy(
-            config.OVERWRITE_DIR / "Makefile-user-c",
+            config.OVERWRITE_DIR / self.chapter_config.get("makefile_user_c", "Makefile-user-c"),
             self.work_user_dir / "c" / "Makefile"
         )
         

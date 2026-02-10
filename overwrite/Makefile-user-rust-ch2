@@ -1,5 +1,6 @@
 TARGET := riscv64-unknown-elf
 OBJDUMP := $(TARGET)-objdump
+OBJCOPY := $(TARGET)-objcopy
 
 OUT_DIR := ../build
 
@@ -15,6 +16,7 @@ $(OUT_DIR)/%: src/bin/%.rs | $(OUT_DIR)
 	@cargo build --release --bin $*
 	@cp target/riscv64gc-unknown-none-elf/release/$* $@
 	$(OBJDUMP) -S $@ > $@.asm
+	@$(OBJCOPY) --strip-all -O binary $@ $@
 
 clean:
 	@cargo clean

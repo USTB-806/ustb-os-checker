@@ -27,6 +27,9 @@ TEMP_USER_DIR = CHECKER_DIR / "temp-user"
 
 # - build_type: 用户程序构建类型 ("bin" 或 "elf")
 # - makefile: 使用的 Makefile 文件名 (位于 overwrite/ 目录)
+# - makefile_user_main: user/Makefile
+# - makefile_user_rust: user/rust/Makefile
+# - makefile_user_c: user/c/Makefile
 # - initproc: 是否需要复制 initproc (初始进程，ch5+ 进程管理需要)
 # - test_programs: 需要从 check/ 覆盖的测试程序列表
 
@@ -34,6 +37,8 @@ CHAPTER_CONFIG = {
     2: {
         "build_type": "bin",
         "makefile": "Makefile-ch2",
+        "makefile_user_c": "Makefile-user-c-ch2",
+        "makefile_user_rust": "Makefile-user-rust-ch2",
         "initproc": False,
         "easy_fs_fuse": None,
         "test_programs": [
@@ -47,6 +52,8 @@ CHAPTER_CONFIG = {
     3: {
         "build_type": "bin",
         "makefile": "Makefile-ch2",
+        "makefile_user_c": "Makefile-user-c-ch3",
+        "makefile_user_rust": "Makefile-user-rust-ch2",
         "initproc": False,
         "easy_fs_fuse": None,
         "test_programs": [

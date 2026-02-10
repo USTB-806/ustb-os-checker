@@ -1,7 +1,8 @@
 TARGET := riscv64-unknown-elf
-CC := clang --target=$(TARGET)
+CC := $(TARGET)-gcc
 LD := $(TARGET)-ld
 OBJDUMP := $(TARGET)-objdump
+OBJCOPY := $(TARGET)-objcopy
 
 CFLAGS := -Wall -Werror -O2 -fno-builtin -nostdlib -mcmodel=medany -march=rv64gc -mabi=lp64 -Ilib
 LDFLAGS := -T ../linker.ld
@@ -23,6 +24,7 @@ $(OUT_DIR)/%: apps/%.c lib.o ../linker.ld | $(OUT_DIR)
 	$(CC) $(CFLAGS) -c $< -o $*.o
 	$(LD) $(LDFLAGS) -o $@ $*.o lib.o
 	$(OBJDUMP) -S $@ > $@.asm
+	$(OBJCOPY) --strip-all -O binary $@ $@
 	@rm -f $*.o
 
 clean:
