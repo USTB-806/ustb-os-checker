@@ -1,0 +1,42 @@
+ARCH := riscv64
+MODE := release
+TARGET := riscv64gc-unknown-none-elf
+KERNEL := target/riscv64gc-unknown-none-elf/release/kernel
+FS_IMG := ../user/rust/target/$(TARGET)/$(MODE)/fs.img
+
+env:
+	(rustup target list | grep "$(TARGET) (installed)") || rustup target add $(TARGET)
+	cargo install cargo-binutils
+	rustup component add rust-src
+	rustup component add llvm-tools-preview
+
+kernel:
+	cargo build --$(MODE) --target $(TARGET)
+
+user:
+	@cd ../user && make build
+
+build: env user kernel fs-img
+
+fs-img: 
+	@make -C ../user build 
+	@rm -f $(FS_IMG)
+	@cd ../easy-fs-fuse && cargo run --release -- -s ../user/rust/src/bin -t ../user/rust/target/riscv64gc-unknown-none-elf/release/
+
+
+QEMU_EXEC = qemu-system-riscv64 -machine virt \
+			-kernel ${KERNEL} \
+			-nographic \
+			-smp 1 \
+			-bios ../bootloader/rustsbi-qemu.bin \
+			-drive file=$(FS_IMG),if=none,format=raw,id=x0 \
+        	-device virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0
+
+run: clean build
+	${QEMU_EXEC}
+
+clean:
+	cargo clean
+	cd ../user && make clean
+
+.PHONY: env kernel user build fs-img run clean

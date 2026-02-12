@@ -32,11 +32,19 @@ expected = [
 not_expected = ["FAIL: T.T"]
 
 [ch4]
-inherit_from = "ch3"
 expected = [
-    "Test sbrk almost OK!",
+    'r"Test sbrk almost OK\d+!"',
+    'r"\[initproc_stage1\] sys_write returned \d+ bytes, OK\d+!"',
+    'r"\[initproc_stage1\] All Lab 4 tests passed\d+!"',
+    'r"Test 04_1 OK\d+!"',
+    'r"Test 04_4 test OK\d+!"',
+    'r"Test 04_5 ummap OK\d+!"',
+    'r"Test 04_6 ummap2 OK\d+!"',
 ]
-not_expected = ["Test sbrk failed!"]
+not_expected = [
+    "Test sbrk failed!",
+    "Should cause error, Test 04_2 fail!"
+]
 
 [ch5]
 inherit_from = "ch4"

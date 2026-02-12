@@ -37,7 +37,7 @@ class TestRunner:
             self.setup_environment()
             self.randomize_strings()
             self.overwrite_configs()
-            self.copy_initproc() if self.chapter_config["initproc"] else None
+            self.copy_initproc()
             self.run_os()
             self.check_output()
             
@@ -208,12 +208,12 @@ class TestRunner:
     def copy_initproc(self):
         print("→ Copying initproc...")
         
-        src_elf = (self.work_user_dir / "build" / "elf" / 
-                   f"ch{self.chapter}_usertest.elf")
-        dst_elf = (self.work_user_dir / "build" / "elf" / 
-                   f"ch{self.chapter}b_initproc.elf")
-        
-        shutil.copy(src_elf, dst_elf)
+        if self.chapter_config["initproc"]:
+            shutil.copy(
+                config.OVERWRITE_DIR / self.chapter_config["initproc"],
+                self.work_user_dir / "rust" / "src" / "bin" / self.chapter_config["initproc"]
+            )
+
         print("  ✓ initproc copied")
     
     def run_os(self):

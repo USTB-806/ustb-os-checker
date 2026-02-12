@@ -39,7 +39,7 @@ CHAPTER_CONFIG = {
         "makefile": "Makefile-ch2",
         "makefile_user_c": "Makefile-user-c-ch2",
         "makefile_user_rust": "Makefile-user-rust-ch2",
-        "initproc": False,
+        "initproc": None,
         "easy_fs_fuse": None,
         "test_programs": [
             "rust/bad_address.rs",
@@ -54,7 +54,7 @@ CHAPTER_CONFIG = {
         "makefile": "Makefile-ch2",
         "makefile_user_c": "Makefile-user-c-ch3",
         "makefile_user_rust": "Makefile-user-rust-ch2",
-        "initproc": False,
+        "initproc": None,
         "easy_fs_fuse": None,
         "test_programs": [
             "rust/ch3b_yield0.rs",
@@ -66,11 +66,20 @@ CHAPTER_CONFIG = {
     },
     4: {
         "build_type": "elf",
-        "makefile": "Makefile-ch2",
-        "initproc": False,
-        "easy_fs_fuse": None,
+        "makefile": "Makefile-ch4",
+        "makefile_user_c": "Makefile-user-c-ch4",
+        "makefile_user_rust": "Makefile-user-rust-ch4",
+        "initproc": None,
+        "easy_fs_fuse": "easy-fs-fuse.rs",
         "test_programs": [
-            "rust/ch4_usertest.rs",
+            "rust/initproc_stage1.rs",
+            "rust/ch4b_sbrk.rs",
+            "rust/ch4_mmap0.rs",
+            "rust/ch4_mmap1.rs",
+            "rust/ch4_mmap2.rs",
+            "rust/ch4_mmap3.rs",
+            "rust/ch4_ummap0.rs",
+            "rust/ch4_ummap1.rs",
         ],
     },
     5: {

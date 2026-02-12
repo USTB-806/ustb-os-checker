@@ -1,0 +1,33 @@
+TARGET := riscv64-unknown-elf
+CC := $(TARGET)-gcc
+LD := $(TARGET)-ld
+OBJDUMP := $(TARGET)-objdump
+OBJCOPY := $(TARGET)-objcopy
+
+CFLAGS := -Wall -Werror -O2 -fno-builtin -nostdlib -mcmodel=medany -march=rv64gc -mabi=lp64 -Ilib
+LDFLAGS := -T ../linker.ld
+
+OUT_DIR := ../build
+
+SRCS := $(wildcard apps/*.c)
+APPS := $(patsubst apps/%.c,%,$(SRCS))
+
+all: $(OUT_DIR) $(addprefix $(OUT_DIR)/,$(APPS))
+
+$(OUT_DIR):
+	mkdir -p $(OUT_DIR)
+
+lib.o: lib/lib.c lib/lib.h lib/stdio.c lib/stdio.h
+	$(CC) $(CFLAGS) -c lib/lib.c -o lib_core.o
+	$(CC) $(CFLAGS) -c lib/stdio.c -o stdio.o
+	$(LD) -r lib_core.o stdio.o -o $@
+	@rm -f lib_core.o stdio.o
+
+$(OUT_DIR)/%: apps/%.c lib.o ../linker.ld | $(OUT_DIR)
+	$(CC) $(CFLAGS) -c $< -o $*.o
+	$(LD) $(LDFLAGS) -o $@ lib.o $*.o
+	$(OBJDUMP) -S $@ > $@.asm
+	@rm -f $*.o
+
+clean:
+	rm -f *.o lib.o
