@@ -34,8 +34,8 @@ not_expected = ["FAIL: T.T"]
 [ch4]
 expected = [
     'r"Test sbrk almost OK\d+!"',
-    'r"\[initproc_stage1\] sys_write returned \d+ bytes, OK\d+!"',
-    'r"\[initproc_stage1\] All Lab 4 tests passed\d+!"',
+    'r"\[initproc\] sys_write returned \d+ bytes, OK\d+!"',
+    'r"\[initproc\] All Lab 4 basic tests passed\d+!"',
     'r"Test 04_1 OK\d+!"',
     'r"Test 04_4 test OK\d+!"',
     'r"Test 04_5 ummap OK\d+!"',
@@ -43,23 +43,49 @@ expected = [
 ]
 not_expected = [
     "Test sbrk failed!",
-    "Should cause error, Test 04_2 fail!"
+    "Should cause error, Test 04_2 fail!",
 ]
 
 [ch5]
 inherit_from = "ch4"
 expected = [
-    "Test spawn0 OK!",
-    "Test wait OK!",
-    "Test waitpid OK!",
-    "Test set_priority OK!",
+    'r"\[initproc\] Test file create\+write passed\d+!"',
+    'r"\[initproc\] Test file read\+verify passed\d+!"',
+    'r"\[initproc\] All Lab 5 tests passed\d+!"',
+    'r"Test file0 OK\d+!"',
+    'r"file_test passed\d+!"',
+    'r"Test ch5_usertest OK\d+!"',
 ]
 exclude = [
-    "string from task trace test",
-    "Test trace OK!",
-    "Test trace_1 OK!",
+    'r"\[initproc\] sys_write returned \d+ bytes, OK\d+!"',
+    'r"\[initproc\] All Lab 4 basic tests passed\d+!"',
+    'r"Test ch4_usertest OK\d+!"',
 ]
 not_expected = []
+
+[ch6]
+inherit_from = "ch5"
+expected = [
+    'r"sys_wait without child process test passed\d+!"',
+    'r"child process pid = \d+, exit code = \d+"',
+    'r"forktest pass\d+\."',
+    'r"Test getpid OK\d+!"',
+    'r"Test ch6_usertest OK\d+!"',
+    'r"\[initproc\] All Lab 6 waitpid tests completed\d+!"',
+]
+exclude = [
+    'r"\[initproc\] Test file create\+write passed\d+!"',
+    'r"\[initproc\] Test file read\+verify passed\d+!"',
+    'r"\[initproc\] All Lab 5 tests passed\d+!"',
+    'r"Test file0 OK\d+!"',
+    'r"file_test passed\d+!"',
+    'r"Test ch5_usertest OK\d+!"',
+]
+not_expected = [
+    "FAIL: T.T",
+    "wait stopped early",
+    "wait got too many",
+]
 
 
 

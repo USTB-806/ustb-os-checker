@@ -221,10 +221,12 @@ class TestRunner:
         print("→ Copying initproc...")
         
         if self.chapter_config["initproc"]:
-            shutil.copy(
-                config.OVERWRITE_DIR / self.chapter_config["initproc"],
-                self.work_user_dir / "rust" / "src" / "bin" / self.chapter_config["initproc"]
-            )
+            src = config.OVERWRITE_DIR / self.chapter_config["initproc"]
+            dst = self.work_user_dir / "rust" / "src" / "bin" / "initproc.rs"
+            shutil.copy(src, dst)
+            print(f"  ✓ {self.chapter_config['initproc']} → initproc.rs")
+        else:
+            print("  (no initproc override)")
 
         print("  ✓ initproc copied")
     
