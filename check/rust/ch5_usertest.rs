@@ -10,10 +10,15 @@ use user_lib::{spawn, yield_};
 /// 按顺序 spawn 各个独立测试程序，确保它们全部执行
 
 const TESTS: &[&str] = &[
-    "ch5_file0\0",
-    "ch5b_filetest_simple\0",
-    "ch5_file1\0",
-    "ch5_file2\0",
+    "ch5_exit0\0",
+    "ch5_exit1\0",
+    "ch5_forktest_simple\0",
+    "ch5_forktest0\0",
+    "ch5_forktest1\0",
+    "ch5_forktree\0",
+    "ch5_getpid\0"
+    "ch5_setprio\0",
+    "ch5_stride\0",
 ];
 
 #[no_mangle]

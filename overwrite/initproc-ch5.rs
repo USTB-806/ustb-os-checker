@@ -14,13 +14,20 @@ const TESTS: &[&str] = &[
     "ch4b_sbrk\0",
     "ch4_mmap0\0",
     "ch4_mmap1\0",
+    "ch4_mmap2\0",
     "ch4_mmap3\0",
     "ch4_ummap0\0",
     "ch4_ummap1\0",
     // ch5 new tests
-    "ch5_file0\0",
-    "ch5b_filetest_simple\0",
-    "ch5_usertest\0",
+    "ch5_exit0\0",
+    "ch5_exit1\0",
+    "ch5_forktest_simple\0",
+    "ch5_forktest0\0",
+    "ch5_forktest1\0",
+    "ch5_forktree\0",
+    "ch5_getpid\0",
+    "ch5_setprio\0",
+    "ch5_stride\0",
 ];
 
 #[no_mangle]

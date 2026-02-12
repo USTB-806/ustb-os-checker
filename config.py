@@ -89,7 +89,7 @@ CHAPTER_CONFIG = {
         "initproc": "initproc-ch5.rs",
         "easy_fs_fuse": "easy-fs-fuse.rs",
         "test_programs": [
-            "rust/ch5_usertest.rs",
+            # "rust/ch5_usertest.rs",
         ],
     },
     6: {

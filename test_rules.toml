@@ -49,19 +49,19 @@ not_expected = [
 [ch5]
 inherit_from = "ch4"
 expected = [
-    'r"\[initproc\] Test file create\+write passed\d+!"',
-    'r"\[initproc\] Test file read\+verify passed\d+!"',
-    'r"\[initproc\] All Lab 5 tests passed\d+!"',
-    'r"Test file0 OK\d+!"',
-    'r"file_test passed\d+!"',
-    'r"Test ch5_usertest OK\d+!"',
+    'r"child process pid = \d+, exit code = 100"',
+    "forktest pass.",
+    'r"forktest2 test passed\d+!"',
+    'r"Test set_priority OK\d+!"',
+    'r"priority = \d+, exitcode = \d+, ratio = \d+"'
 ]
 exclude = [
     'r"\[initproc\] sys_write returned \d+ bytes, OK\d+!"',
     'r"\[initproc\] All Lab 4 basic tests passed\d+!"',
-    'r"Test ch4_usertest OK\d+!"',
 ]
-not_expected = []
+not_expected = [
+    "FAIL: T.T",
+]
 
 [ch6]
 inherit_from = "ch5"
