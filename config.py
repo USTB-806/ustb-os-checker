@@ -18,12 +18,14 @@ CHECKER_DIR = Path(__file__).parent.absolute()
 KERNEL_ROOT_DIR = CHECKER_DIR.parent
 KERNEL_DIR = KERNEL_ROOT_DIR / "kernel"
 USER_DIR = KERNEL_ROOT_DIR / "user"
+EASY_FS_DIR = KERNEL_ROOT_DIR / "easy-fs-fuse"
 
 OVERWRITE_DIR = CHECKER_DIR / "overwrite"
 CHECK_DIR = CHECKER_DIR / "check"
 
 TEMP_KERNEL_DIR = CHECKER_DIR / "temp-os"
 TEMP_USER_DIR = CHECKER_DIR / "temp-user"
+TEMP_EASY_FS_DIR = CHECKER_DIR / "temp-easy-fs-fuse"
 
 # - build_type: 用户程序构建类型 ("bin" 或 "elf")
 # - makefile: 使用的 Makefile 文件名 (位于 overwrite/ 目录)
