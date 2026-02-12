@@ -56,15 +56,19 @@ class TestRunner:
     def create_work_copy(self):
         print("→ Creating work copy...")
         
-        for temp_dir in [self.work_kernel_dir, self.work_user_dir, config.TEMP_EASY_FS_DIR]:
+        temp_dirs = [self.work_kernel_dir, self.work_user_dir, 
+                     config.TEMP_EASY_FS_LIB_DIR, config.TEMP_EASY_FS_FUSE_DIR]
+        for temp_dir in temp_dirs:
             if temp_dir.exists():
                 shutil.rmtree(temp_dir)
         
         shutil.copytree(config.KERNEL_DIR, self.work_kernel_dir)
         shutil.copytree(config.USER_DIR, self.work_user_dir)
         
-        if config.EASY_FS_DIR.exists():
-            shutil.copytree(config.EASY_FS_DIR, config.TEMP_EASY_FS_DIR)
+        if config.EASY_FS_LIB_DIR.exists():
+            shutil.copytree(config.EASY_FS_LIB_DIR, config.TEMP_EASY_FS_LIB_DIR)
+        if config.EASY_FS_FUSE_DIR.exists():
+            shutil.copytree(config.EASY_FS_FUSE_DIR, config.TEMP_EASY_FS_FUSE_DIR)
         
         self._run_command(f"make -C {self.work_kernel_dir} clean", check=False)
         self._run_command(f"make -C {self.work_user_dir} clean", check=False)
@@ -74,7 +78,9 @@ class TestRunner:
     def cleanup(self):
         print("\n→ Cleaning up temp directories...")
         
-        for temp_dir in [self.work_kernel_dir, self.work_user_dir, config.TEMP_EASY_FS_DIR]:
+        temp_dirs = [self.work_kernel_dir, self.work_user_dir,
+                     config.TEMP_EASY_FS_LIB_DIR, config.TEMP_EASY_FS_FUSE_DIR]
+        for temp_dir in temp_dirs:
             if temp_dir.exists():
                 shutil.rmtree(temp_dir)
         
@@ -196,10 +202,10 @@ class TestRunner:
         )
         
         # Overwrite easy-fs-fuse
-        if self.chapter_config["easy_fs_fuse"] and config.TEMP_EASY_FS_DIR.exists():
+        if self.chapter_config["easy_fs_fuse"] and config.TEMP_EASY_FS_FUSE_DIR.exists():
             shutil.copy(
                 config.OVERWRITE_DIR / self.chapter_config["easy_fs_fuse"],
-                config.TEMP_EASY_FS_DIR / "src" / "main.rs"
+                config.TEMP_EASY_FS_FUSE_DIR / "src" / "main.rs"
             )
         
         cmd = f"make -C {self.work_user_dir} build"
