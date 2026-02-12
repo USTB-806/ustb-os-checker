@@ -57,7 +57,8 @@ class TestRunner:
         print("→ Creating work copy...")
         
         temp_dirs = [self.work_kernel_dir, self.work_user_dir, 
-                     config.TEMP_EASY_FS_LIB_DIR, config.TEMP_EASY_FS_FUSE_DIR]
+                     config.TEMP_EASY_FS_LIB_DIR, config.TEMP_EASY_FS_FUSE_DIR,
+                     config.TEMP_BOOTLOADER_DIR]
         for temp_dir in temp_dirs:
             if temp_dir.exists():
                 shutil.rmtree(temp_dir)
@@ -69,6 +70,8 @@ class TestRunner:
             shutil.copytree(config.EASY_FS_LIB_DIR, config.TEMP_EASY_FS_LIB_DIR)
         if config.EASY_FS_FUSE_DIR.exists():
             shutil.copytree(config.EASY_FS_FUSE_DIR, config.TEMP_EASY_FS_FUSE_DIR)
+        if config.BOOTLOADER_DIR.exists():
+            shutil.copytree(config.BOOTLOADER_DIR, config.TEMP_BOOTLOADER_DIR)
         
         self._run_command(f"make -C {self.work_kernel_dir} clean", check=False)
         self._run_command(f"make -C {self.work_user_dir} clean", check=False)
@@ -79,7 +82,8 @@ class TestRunner:
         print("\n→ Cleaning up temp directories...")
         
         temp_dirs = [self.work_kernel_dir, self.work_user_dir,
-                     config.TEMP_EASY_FS_LIB_DIR, config.TEMP_EASY_FS_FUSE_DIR]
+                     config.TEMP_EASY_FS_LIB_DIR, config.TEMP_EASY_FS_FUSE_DIR,
+                     config.TEMP_BOOTLOADER_DIR]
         for temp_dir in temp_dirs:
             if temp_dir.exists():
                 shutil.rmtree(temp_dir)

@@ -20,6 +20,7 @@ KERNEL_DIR = KERNEL_ROOT_DIR / "kernel"
 USER_DIR = KERNEL_ROOT_DIR / "user"
 EASY_FS_LIB_DIR = KERNEL_ROOT_DIR / "easy-fs"
 EASY_FS_FUSE_DIR = KERNEL_ROOT_DIR / "easy-fs-fuse"
+BOOTLOADER_DIR = KERNEL_ROOT_DIR / "bootloader"
 
 OVERWRITE_DIR = CHECKER_DIR / "overwrite"
 CHECK_DIR = CHECKER_DIR / "check"
@@ -28,6 +29,7 @@ TEMP_KERNEL_DIR = CHECKER_DIR / "temp-os"
 TEMP_USER_DIR = CHECKER_DIR / "temp-user"
 TEMP_EASY_FS_LIB_DIR = CHECKER_DIR / "easy-fs"
 TEMP_EASY_FS_FUSE_DIR = CHECKER_DIR / "temp-easy-fs-fuse"
+TEMP_BOOTLOADER_DIR = CHECKER_DIR / "bootloader"
 
 # - build_type: 用户程序构建类型 ("bin" 或 "elf")
 # - makefile: 使用的 Makefile 文件名 (位于 overwrite/ 目录)
