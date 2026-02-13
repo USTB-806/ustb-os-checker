@@ -66,25 +66,18 @@ not_expected = [
 [ch6]
 inherit_from = "ch5"
 expected = [
-    'r"sys_wait without child process test passed\d+!"',
-    'r"child process pid = \d+, exit code = \d+"',
-    'r"forktest pass\d+\."',
-    'r"Test getpid OK\d+!"',
-    'r"Test ch6_usertest OK\d+!"',
-    'r"\[initproc\] All Lab 6 waitpid tests completed\d+!"',
+    'r"File cat test passed\d+!"',
+    'r"file_test passed\d+!"',
+    'r"Test file0 OK\d+!"',
+    'r"Test fstat OK\d+!"',
+    'r"Test link OK\d+!"',
+    'r"Test mass open/unlink OK\d+!"',
 ]
 exclude = [
-    'r"\[initproc\] Test file create\+write passed\d+!"',
-    'r"\[initproc\] Test file read\+verify passed\d+!"',
-    'r"\[initproc\] All Lab 5 tests passed\d+!"',
-    'r"Test file0 OK\d+!"',
-    'r"file_test passed\d+!"',
-    'r"Test ch5_usertest OK\d+!"',
+
 ]
 not_expected = [
     "FAIL: T.T",
-    "wait stopped early",
-    "wait got too many",
 ]
 
 
