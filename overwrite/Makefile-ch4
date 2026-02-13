@@ -2,7 +2,7 @@ ARCH := riscv64
 MODE := release
 TARGET := riscv64gc-unknown-none-elf
 KERNEL := target/riscv64gc-unknown-none-elf/release/kernel
-FS_IMG := ../temp-user/rust/target/$(TARGET)/$(MODE)/fs.img
+FS_IMG := ../temp-user/build/fs.img
 
 env:
 	(rustup target list | grep "$(TARGET) (installed)") || rustup target add $(TARGET)
@@ -17,7 +17,7 @@ build: env kernel fs-img
 
 fs-img: 
 	@rm -f $(FS_IMG)
-	@cd ../temp-easy-fs-fuse && cargo run --release -- -s ../temp-user/rust/src/bin -t ../temp-user/rust/target/riscv64gc-unknown-none-elf/release/
+	@cd ../temp-easy-fs-fuse && cargo run --release -- -t ../temp-user/build/
 
 
 QEMU_EXEC = qemu-system-riscv64 -machine virt \

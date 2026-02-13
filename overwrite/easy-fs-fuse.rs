@@ -32,13 +32,6 @@ fn main() {
 fn easy_fs_pack() -> std::io::Result<()> {
     let matches = App::new("EasyFileSystem packer")
         .arg(
-            Arg::with_name("source")
-                .short("s")
-                .long("source")
-                .takes_value(true)
-                .help("Executable source dir(with backslash)"),
-        )
-        .arg(
             Arg::with_name("target")
                 .short("t")
                 .long("target")
@@ -46,9 +39,8 @@ fn easy_fs_pack() -> std::io::Result<()> {
                 .help("Executable target dir(with backslash)"),
         )
         .get_matches();
-    let src_path = matches.value_of("source").unwrap();
     let target_path = matches.value_of("target").unwrap();
-    println!("src_path = {}\ntarget_path = {}", src_path, target_path);
+    println!("Easy-fs-fuse: target_path = {}", target_path);
     let block_file = Arc::new(BlockFile(Mutex::new({
         let f = OpenOptions::new()
             .read(true)
@@ -61,15 +53,22 @@ fn easy_fs_pack() -> std::io::Result<()> {
     // 16MiB, at most 4095 files
     let efs = EasyFileSystem::create(block_file, 16 * 2048, 1);
     let root_inode = Arc::new(EasyFileSystem::root_inode(&efs));
-    let apps: Vec<_> = read_dir(src_path)
+
+    let apps: Vec<_> = read_dir(target_path)
         .unwrap()
         .into_iter()
-        .map(|dir_entry| {
-            let mut name_with_ext = dir_entry.unwrap().file_name().into_string().unwrap();
-            name_with_ext.drain(name_with_ext.find('.').unwrap()..name_with_ext.len());
-            name_with_ext
+        .filter_map(|dir_entry| {
+            let entry = dir_entry.unwrap();
+            let name = entry.file_name().into_string().unwrap();
+            // Skip files with extensions and directories
+            if name.contains('.') || entry.file_type().map_or(true, |ft| !ft.is_file()) {
+                None
+            } else {
+                Some(name)
+            }
         })
         .collect();
+
     for app in apps {
         // load app data from host file system
         let mut host_file = File::open(format!("{}{}", target_path, app)).unwrap();
