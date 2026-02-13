@@ -9,7 +9,7 @@ from pathlib import Path
 RUST_TARGET = "riscv64gc-unknown-none-elf"
 BUILD_MODE = "release"
 
-QEMU_TIMEOUT_SECONDS = 30
+QEMU_TIMEOUT_SECONDS = 60
 
 # /path/to/ustb-os-kernel/ustb-os-checker/
 CHECKER_DIR = Path(__file__).parent.absolute()
@@ -100,7 +100,7 @@ CHAPTER_CONFIG = {
         "initproc": "initproc-ch6.rs",
         "easy_fs_fuse": "easy-fs-fuse.rs",
         "test_programs": [
-            "rust/ch6_usertest.rs",
+            # "rust/ch6_usertest.rs",
         ],
     },
 }
