@@ -34,10 +34,10 @@ class TestRunner:
         try:
             self.create_work_copy()
             self.overwrite_test_programs()
+            self.copy_initproc()
             self.setup_environment()
             self.randomize_strings()
             self.overwrite_configs()
-            self.copy_initproc()
             self.run_os()
             self.check_output()
             

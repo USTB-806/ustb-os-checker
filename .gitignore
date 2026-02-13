@@ -1,5 +1,7 @@
 temp-os
 temp-user
+easy-fs
+bootloader
 .idea
 __pycache__
 temp-*

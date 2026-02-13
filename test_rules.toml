@@ -51,7 +51,7 @@ inherit_from = "ch4"
 expected = [
     'r"child process pid = \d+, exit code = 100"',
     "forktest pass.",
-    'r"forktest2 test passed\d+!"',
+    'r"forktest1 test passed\d+!"',
     'r"Test set_priority OK\d+!"',
     'r"priority = \d+, exitcode = \d+, ratio = \d+"'
 ]

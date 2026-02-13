@@ -27,40 +27,18 @@ const TESTS: &[&str] = &[
     "ch5_forktree\0",
     "ch5_getpid\0",
     "ch5_setprio\0",
-    "ch5_stride\0",
+    "ch5_stride0\0",
+    "ch5_stride1\0",
+    "ch5_stride2\0",
+    "ch5_stride3\0",
+    "ch5_stride4\0",
+    "ch5_stride5\0",
 ];
 
 #[no_mangle]
 fn main() -> i32 {
-    println!("[initproc] === Lab 5 File System Test ===");
+    println!("[initproc] Hello from initproc!");
 
-    // Test 1: create + write
-    let fd = open("test_checker\0", OpenFlags::CREATE | OpenFlags::WRONLY);
-    assert!(fd > 0, "open for write failed");
-    let msg = b"Hello from Lab 5!";
-    let ret = write(fd as usize, msg);
-    assert_eq!(ret as usize, msg.len());
-    close(fd as usize);
-    println!("[initproc] Test file create+write passed!");
-
-    // Test 2: reopen + read + verify
-    let fd = open("test_checker\0", OpenFlags::RDONLY);
-    assert!(fd > 0, "open for read failed");
-    let mut buf = [0u8; 64];
-    let n = read(fd as usize, &mut buf);
-    assert_eq!(n as usize, msg.len());
-    let content = core::str::from_utf8(&buf[..n as usize]).unwrap();
-    assert_eq!(content, "Hello from Lab 5!");
-    close(fd as usize);
-    println!("[initproc] Test file read+verify passed!");
-
-    // Test 3: stdout write
-    let stdout_msg = b"[initproc] stdout write OK!\n";
-    write(1, stdout_msg);
-
-    println!("[initproc] All Lab 5 tests passed!");
-
-    // Spawn ch5 test programs
     let mut spawned = 0;
     for test in TESTS {
         let pid = spawn(*test);
@@ -74,6 +52,6 @@ fn main() -> i32 {
         yield_();
     }
 
-    println!("[initproc] initproc exiting.");
+    println!("[initproc] initproc lab 5 exiting, all tests should have completed.");
     0
 }

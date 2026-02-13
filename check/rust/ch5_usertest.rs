@@ -18,7 +18,12 @@ const TESTS: &[&str] = &[
     "ch5_forktree\0",
     "ch5_getpid\0"
     "ch5_setprio\0",
-    "ch5_stride\0",
+    "ch5_stride0\0",
+    "ch5_stride1\0",
+    "ch5_stride2\0",
+    "ch5_stride3\0",
+    "ch5_stride4\0",
+    "ch5_stride5\0",
 ];
 
 #[no_mangle]

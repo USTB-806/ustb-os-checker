@@ -29,6 +29,6 @@ pub fn main() -> i32 {
         assert_eq!(exit_code, 0);
     }
     assert!(wait(&mut exit_code) < 0);
-    println!("forktest2 test passed!");
+    println!("forktest1 test passed!");
     0
 }
