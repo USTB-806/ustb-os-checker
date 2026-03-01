@@ -8,6 +8,7 @@ Platform entrypoint for ustb-os-checker.
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -41,6 +42,24 @@ def build_result(verdict: str, score: int, comment: str, detail: str = "") -> di
         "comment": comment,
         "detail": detail,
     }
+
+
+def extract_pass_stats(output: str):
+    match = re.search(r"Test passed:\s*(\d+)\s*/\s*(\d+)", output or "")
+    if not match:
+        return None
+    passed = int(match.group(1))
+    total = int(match.group(2))
+    if total <= 0:
+        return None
+    return passed, total
+
+
+def score_from_pass_stats(stats) -> int:
+    if not stats:
+        return 0
+    passed, total = stats
+    return int(round(100 * passed / total))
 
 
 def save_persisted(result: dict, log_text: str) -> None:
@@ -95,11 +114,29 @@ def main() -> int:
         if args.show_log:
             print(output, file=sys.stderr, end="")
 
+        pass_stats = extract_pass_stats(output)
+
         if proc.returncode == 0:
-            result = build_result("AC", 100, f"chapter {chapter} passed", output[-8000:])
+            score = score_from_pass_stats(pass_stats) if pass_stats else 100
+            if pass_stats:
+                passed, total = pass_stats
+                comment = f"chapter {chapter} passed ({passed}/{total})"
+            else:
+                comment = f"chapter {chapter} passed"
+            result = build_result("AC", score, comment, output[-8000:])
         else:
             verdict = classify_failure(output)
-            result = build_result(verdict, 0, f"chapter {chapter} failed", output[-8000:])
+            if verdict == "RE":
+                score = 0
+                comment = f"chapter {chapter} failed"
+            else:
+                score = score_from_pass_stats(pass_stats)
+                if pass_stats:
+                    passed, total = pass_stats
+                    comment = f"chapter {chapter} partial ({passed}/{total})"
+                else:
+                    comment = f"chapter {chapter} failed"
+            result = build_result(verdict, score, comment, output[-8000:])
 
     except subprocess.TimeoutExpired as e:
         output = (e.stdout or "") if isinstance(e.stdout, str) else ""
