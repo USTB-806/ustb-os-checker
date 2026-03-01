@@ -11,6 +11,9 @@ test: .check_chapter
 	@echo "Running test with test_runner.py..."
 	python3 test_runner.py $(CHAPTER)
 
+judge: .check_chapter
+	@python3 judge.py --chapter $(CHAPTER)
+
 clean:
 	@rm -f stdout-ch*
 	@rm -rf temp-*
@@ -21,6 +24,7 @@ help:
 	@echo ""
 	@echo "Basic Usage:"
 	@echo "  make test CHAPTER=3"
+	@echo "  make judge CHAPTER=3"
 	@echo ""
 	@echo "Directory Structure:"
 	@echo "  ustb-os-kernel/"
@@ -30,9 +34,10 @@ help:
 	@echo ""
 	@echo "Other Commands:"
 	@echo "  make clean                    # Clean temporary files"
+	@echo "  make judge CHAPTER=3          # JSON output for platform"
 	@echo "  python3 config.py             # Check configuration"
 
 check-config:
 	@python3 config.py
 
-.PHONY: test clean help check-config .check_chapter
+.PHONY: test judge clean help check-config .check_chapter
