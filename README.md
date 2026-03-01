@@ -9,7 +9,7 @@
 ```shell
 cd /oslab && git clone https://github.com/USTB-806/ustb-os-checker.git
 cd ustb-os-checker
-python3 test_runner.py 3
+make test CHAPTER=3
 ```
 
 其中运行结果将保存至 `stdout-ch3` 文件中.
