@@ -5,9 +5,11 @@
 """
 
 import argparse
+import glob
 import os
 import random
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -25,10 +27,128 @@ class TestRunner:
         
         self.work_kernel_dir = config.TEMP_KERNEL_DIR
         self.work_user_dir = config.TEMP_USER_DIR
+
+        self.cargo_cmd, self.rustc_cmd, self.toolchain_issue = self._resolve_toolchain()
+        if self.cargo_cmd is None or self.rustc_cmd is None:
+            raise RuntimeError(self.toolchain_issue or "No usable cargo/rustc toolchain")
+        self.qemu_cmd = self._resolve_qemu_binary()
+        self.exec_env = os.environ.copy()
+        self._prepare_exec_env()
         
         print(f"\n{'=' * 30}")
         print(f"ustb-os-checker - chapter {chapter}")
         print(f"{'=' * 30}\n")
+
+    def _prepare_exec_env(self):
+        path_parts = [p for p in self.exec_env.get("PATH", "").split(":") if p]
+        prepend_dirs = []
+
+        qemu_bin_dir = str(Path(self.qemu_cmd).parent)
+        prepend_dirs.append(qemu_bin_dir)
+
+        cargo_bin_dir = str(Path(self.cargo_cmd).parent)
+        prepend_dirs.append(cargo_bin_dir)
+
+        # Ensure selected bins have highest priority.
+        for d in reversed(prepend_dirs):
+            if d in path_parts:
+                path_parts.remove(d)
+            path_parts.insert(0, d)
+        self.exec_env["PATH"] = ":".join(path_parts)
+        self.exec_env["CARGO_NET_OFFLINE"] = "true"
+
+        self.exec_env["RUSTC"] = self.rustc_cmd
+
+        rustdoc_path = str(Path(cargo_bin_dir) / "rustdoc")
+        if os.path.exists(rustdoc_path):
+            self.exec_env["RUSTDOC"] = rustdoc_path
+
+    def _probe_exec(self, args, env=None):
+        try:
+            result = subprocess.run(
+                args,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                timeout=8,
+                env=env,
+            )
+            return result.returncode == 0, (result.stderr or result.stdout or "").strip()
+        except Exception as e:
+            return False, str(e)
+
+    def _resolve_toolchain(self):
+        home = os.environ.get("HOME", "/root")
+        cargo_candidates = []
+
+        for c in ["/usr/bin/cargo", "/usr/local/bin/cargo", "/bin/cargo"]:
+            if os.path.isfile(c) and os.access(c, os.X_OK):
+                cargo_candidates.append(c)
+
+        for pattern in [
+            f"{home}/.rustup/toolchains/*/bin/cargo",
+            "/usr/local/rustup/toolchains/*/bin/cargo",
+            "/opt/rustup/toolchains/*/bin/cargo",
+        ]:
+            cargo_candidates.extend(sorted(glob.glob(pattern)))
+
+        which_cargo = shutil.which("cargo")
+        if which_cargo:
+            cargo_candidates.append(which_cargo)
+
+        # dedup while preserving order
+        seen = set()
+        uniq_candidates = []
+        for c in cargo_candidates:
+            if c not in seen:
+                seen.add(c)
+                uniq_candidates.append(c)
+
+        probe_errors = []
+        for cargo in uniq_candidates:
+            cargo_dir = str(Path(cargo).parent)
+            rustc = str(Path(cargo_dir) / "rustc")
+
+            if not (os.path.isfile(cargo) and os.access(cargo, os.X_OK)):
+                continue
+            if not (os.path.isfile(rustc) and os.access(rustc, os.X_OK)):
+                continue
+
+            env = os.environ.copy()
+            path_parts = [p for p in env.get("PATH", "").split(":") if p]
+            if cargo_dir in path_parts:
+                path_parts.remove(cargo_dir)
+            path_parts.insert(0, cargo_dir)
+            env["PATH"] = ":".join(path_parts)
+            env["RUSTC"] = rustc
+
+            ok_rustc, err_rustc = self._probe_exec([rustc, "-vV"], env=env)
+            if not ok_rustc:
+                probe_errors.append(f"rustc blocked: {rustc} => {err_rustc[:120]}")
+                continue
+
+            ok_cargo, err_cargo = self._probe_exec([cargo, "-V"], env=env)
+            if not ok_cargo:
+                probe_errors.append(f"cargo blocked: {cargo} => {err_cargo[:120]}")
+                continue
+
+            return cargo, rustc, None
+
+        details = "; ".join(probe_errors[-6:]) if probe_errors else "no candidates discovered"
+        return None, None, f"No usable cargo/rustc pair found under sandbox policy: {details}"
+
+    def _resolve_qemu_binary(self):
+        candidates = [
+            shutil.which("qemu-system-riscv64"),
+            "/root/qemu-9.2.1/build/qemu-system-riscv64",
+            "/usr/bin/qemu-system-riscv64",
+            "/usr/local/bin/qemu-system-riscv64",
+            "/opt/qemu/bin/qemu-system-riscv64",
+        ]
+        for c in candidates:
+            if c and os.path.isfile(c) and os.access(c, os.X_OK):
+                return c
+        raise RuntimeError("qemu-system-riscv64 not found. Please install it or provide absolute path.")
     
     def run(self):
         try:
@@ -123,28 +243,16 @@ class TestRunner:
     
     def setup_environment(self):
         print("→ Setting up Rust environment...")
-        
-        print("  Setting nightly toolchain...")
-        self._run_command("rustup default nightly")
-        
-        # Check and install riscv64gc target
-        result = subprocess.run(
-            ["rustup", "target", "list"],
-            capture_output=True,
-            text=True
-        )
-        
-        if "riscv64gc-unknown-none-elf (installed)" not in result.stdout:
-            print("  Installing riscv64gc-unknown-none-elf target...")
-            self._run_command("rustup target add riscv64gc-unknown-none-elf")
-        
-        # Install cargo-binutils
-        print("  Checking cargo-binutils...")
-        self._run_command("cargo install cargo-binutils --locked", check=False)
-        
-        # Add components
-        self._run_command("rustup component add rust-src")
-        self._run_command("rustup component add llvm-tools-preview")
+        print(f"  Using qemu binary: {self.qemu_cmd}")
+        print(f"  Using cargo binary: {self.cargo_cmd}")
+        print(f"  Using rustc binary: {self.rustc_cmd}")
+
+        if not os.path.exists(self.rustc_cmd):
+            raise RuntimeError(f"Configured RUSTC not found: {self.rustc_cmd}")
+
+        # Avoid rustup operations in restricted sandbox.
+        # Assume image already contains required toolchain/targets.
+        print("  Skipping rustup setup in sandbox environment")
         
         print("  ✓ Environment setup finished")
     
@@ -234,22 +342,130 @@ class TestRunner:
         print("→ Running OS...")
         
         stdout_file = config.CHECKER_DIR / f"stdout-ch{self.chapter}"
-        
-        cmd = f"make -C {self.work_kernel_dir} run"
+
+        # Build kernel directly instead of `make run` to avoid platform sandbox
+        # restrictions on spawning shell commands inside Makefile recipes.
+        build_cmd = [
+            self.cargo_cmd, "build",
+            "--release",
+            "--target", config.RUST_TARGET,
+            "--offline",
+        ]
+        build_result = subprocess.run(
+            build_cmd,
+            cwd=self.work_kernel_dir,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            env=self.exec_env,
+        )
+        print(build_result.stdout)
+
+        if build_result.returncode != 0:
+            build_log = build_result.stdout or ""
+            # Offline cache fallback: locked bitflags version may not exist in image cache.
+            if (
+                "failed to select a version for the requirement `bitflags" in build_log
+                and "locked to 2.11.0" in build_log
+                and "--offline" in build_log
+            ):
+                print("  ! Retry kernel build: downgrade locked bitflags to cached 2.10.0")
+                update_cmd = [
+                    self.cargo_cmd,
+                    "update",
+                    "-p",
+                    "bitflags",
+                    "--precise",
+                    "2.10.0",
+                    "--offline",
+                ]
+                update_result = subprocess.run(
+                    update_cmd,
+                    cwd=self.work_kernel_dir,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    env=self.exec_env,
+                )
+                print(update_result.stdout)
+
+                if update_result.returncode == 0:
+                    build_result = subprocess.run(
+                        build_cmd,
+                        cwd=self.work_kernel_dir,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                        env=self.exec_env,
+                    )
+                    print(build_result.stdout)
+
+        if build_result.returncode != 0:
+            raise RuntimeError("Kernel build failed")
+
+        kernel_bin = self.work_kernel_dir / "target" / config.RUST_TARGET / config.BUILD_MODE / "kernel"
+        if not kernel_bin.exists():
+            raise RuntimeError(f"Kernel binary not found: {kernel_bin}")
+
+        qemu_cmd = [
+            self.qemu_cmd,
+            "-machine", "virt",
+            "-accel", "tcg,thread=single",
+            "-kernel", str(kernel_bin),
+            "-nographic",
+            "-smp", "1",
+        ]
+
+        if self.chapter_config["build_type"] == "elf":
+            fs_img = self.work_user_dir / "build" / "fs.img"
+            if config.TEMP_EASY_FS_FUSE_DIR.exists():
+                fs_cmd = ["cargo", "run", "--release", "--", "-t", "../temp-user/build/"]
+                fs_cmd[0] = self.cargo_cmd
+                fs_cmd.insert(3, "--offline")
+                fs_result = subprocess.run(
+                    fs_cmd,
+                    cwd=config.TEMP_EASY_FS_FUSE_DIR,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    env=self.exec_env,
+                )
+                print(fs_result.stdout)
+                if fs_result.returncode != 0:
+                    raise RuntimeError("Build fs.img failed")
+
+            if not fs_img.exists():
+                raise RuntimeError(f"fs image not found: {fs_img}")
+
+            bios_path = config.TEMP_BOOTLOADER_DIR / "rustsbi-qemu.bin"
+            if bios_path.exists():
+                qemu_cmd.extend(["-bios", str(bios_path)])
+            else:
+                qemu_cmd.extend(["-bios", "default"])
+
+            qemu_cmd.extend([
+                "-drive", f"file={fs_img},if=none,format=raw,id=x0",
+                "-device", "virtio-blk-device,drive=x0,bus=virtio-mmio-bus.0",
+            ])
+        else:
+            qemu_cmd.extend(["-bios", "default"])
         
         with open(stdout_file, "w") as f:
             result = subprocess.run(
-                cmd,
-                shell=True,
+                qemu_cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
-                timeout=config.QEMU_TIMEOUT_SECONDS
+                timeout=config.QEMU_TIMEOUT_SECONDS,
+                env=self.exec_env,
             )
             
             output = result.stdout
             print(output)
             f.write(output)
+
+        if result.returncode != 0:
+            raise RuntimeError(f"QEMU run failed with exit code {result.returncode}")
         
         self.stdout_file = stdout_file
         print("  ✓ OS run finished")
@@ -277,12 +493,16 @@ class TestRunner:
         print("  ✓ Output check passed")
     
     def _run_command(self, cmd: str, check: bool = True):
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        if isinstance(cmd, str):
+            args = shlex.split(cmd)
+        else:
+            args = cmd
+        result = subprocess.run(args, capture_output=True, text=True, env=self.exec_env)
         
         if check and result.returncode != 0:
             print(result.stdout)
             print(result.stderr)
-            raise RuntimeError(f"Command failed: {cmd}")
+            raise RuntimeError(f"Command failed: {' '.join(args)}")
         
         return result
     
@@ -304,15 +524,14 @@ def main():
         print(f"Error: {e}")
         sys.exit(1)
     
-    runner = TestRunner(args.chapter)
-    
     try:
+        runner = TestRunner(args.chapter)
         runner.run()
     except KeyboardInterrupt:
         print("\n\nTest interrupted")
-        runner.cleanup()
         sys.exit(1)
-    except Exception:
+    except Exception as e:
+        print(f"Error: {e}")
         sys.exit(1)
 
 

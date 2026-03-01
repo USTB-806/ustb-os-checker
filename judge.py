@@ -16,6 +16,24 @@ from pathlib import Path
 CHECKER_DIR = Path(__file__).parent.absolute()
 
 
+def classify_failure(output: str) -> str:
+    text = (output or "").lower()
+    infra_markers = [
+        "operation not permitted",
+        "no usable cargo/rustc pair",
+        "unable to install ctrlc handler",
+        "rust toolchain not found",
+        "kernel build failed",
+        "build fs.img failed",
+        "qemu run failed",
+        "traceback (most recent call last)",
+    ]
+    for marker in infra_markers:
+        if marker in text:
+            return "RE"
+    return "WA"
+
+
 def build_result(verdict: str, score: int, comment: str, detail: str = "") -> dict:
     return {
         "verdict": verdict,
@@ -80,7 +98,8 @@ def main() -> int:
         if proc.returncode == 0:
             result = build_result("AC", 100, f"chapter {chapter} passed", output[-8000:])
         else:
-            result = build_result("WA", 0, f"chapter {chapter} failed", output[-8000:])
+            verdict = classify_failure(output)
+            result = build_result(verdict, 0, f"chapter {chapter} failed", output[-8000:])
 
     except subprocess.TimeoutExpired as e:
         output = (e.stdout or "") if isinstance(e.stdout, str) else ""
