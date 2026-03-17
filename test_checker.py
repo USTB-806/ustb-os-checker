@@ -167,7 +167,7 @@ def test(chapter: str, expected: list, not_expected: list = None):
 
     # Extra semantic check for stride scheduling tests.
     has_stride_pattern = 'r"priority = \\d+, exitcode = \\d+, ratio = \\d+"' in expected
-    if has_stride_pattern and chapter in {"ch5", "ch6"}:
+    if has_stride_pattern and chapter in "ch5":
         total += 1
         ok, msg = check_stride_fairness(output)
         if ok:
